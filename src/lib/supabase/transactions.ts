@@ -52,11 +52,12 @@ export async function fetchTransactions(): Promise<Transaction[]> {
 
   if (error) {
     // FK not set up yet — query without profiles join
-    ({ data, error } = await supabase
+    const fallback = await supabase
       .from("transactions")
       .select(SELECT_BASE)
-      .order("date", { ascending: false }));
-    if (error) throw error;
+      .order("date", { ascending: false });
+    if (fallback.error) throw fallback.error;
+    data = fallback.data;
   }
 
   return (data ?? []).map((row) => mapTransactionRow(row as TransactionRow));

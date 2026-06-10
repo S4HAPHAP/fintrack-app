@@ -51,7 +51,8 @@ export async function fetchTransactions(): Promise<Transaction[]> {
     .order("date", { ascending: false });
 
   if (!res1.error) {
-    return (res1.data ?? []).map((row) => mapTransactionRow(row as TransactionRow));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (res1.data ?? []).map((row: any) => mapTransactionRow(row as TransactionRow));
   }
 
   // FK not set up yet — query without profiles join
@@ -61,7 +62,8 @@ export async function fetchTransactions(): Promise<Transaction[]> {
     .order("date", { ascending: false });
   if (res2.error) throw res2.error;
 
-  return (res2.data ?? []).map((row) => mapTransactionRow(row as TransactionRow));
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (res2.data ?? []).map((row: any) => mapTransactionRow(row as TransactionRow));
 }
 
 async function getPrimaryCompanyId(): Promise<string | null> {

@@ -45,22 +45,23 @@ const SELECT_WITH_PROFILE = SELECT_BASE + ", profiles!user_id(full_name)";
 
 export async function fetchTransactions(): Promise<Transaction[]> {
   // Try with profiles join first; fall back without if FK missing
-  let { data, error } = await supabase
+  const res1 = await supabase
     .from("transactions")
     .select(SELECT_WITH_PROFILE)
     .order("date", { ascending: false });
 
-  if (error) {
-    // FK not set up yet — query without profiles join
-    const fallback = await supabase
-      .from("transactions")
-      .select(SELECT_BASE)
-      .order("date", { ascending: false });
-    if (fallback.error) throw fallback.error;
-    data = fallback.data;
+  if (!res1.error) {
+    return (res1.data ?? []).map((row) => mapTransactionRow(row as TransactionRow));
   }
 
-  return (data ?? []).map((row) => mapTransactionRow(row as TransactionRow));
+  // FK not set up yet — query without profiles join
+  const res2 = await supabase
+    .from("transactions")
+    .select(SELECT_BASE)
+    .order("date", { ascending: false });
+  if (res2.error) throw res2.error;
+
+  return (res2.data ?? []).map((row) => mapTransactionRow(row as TransactionRow));
 }
 
 async function getPrimaryCompanyId(): Promise<string | null> {

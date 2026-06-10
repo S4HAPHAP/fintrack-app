@@ -63,7 +63,8 @@ export function MonthlyChart({ transactions }: { transactions: Transaction[] }) 
               <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#64748b" }} />
               <YAxis tickFormatter={formatK} tick={{ fontSize: 11, fill: "#64748b" }} />
               <Tooltip
-                formatter={(value: number) => value.toLocaleString("th-TH")}
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                formatter={(value: any) => [value.toLocaleString("th-TH"), ""]}
                 contentStyle={{ borderRadius: 8, border: "1px solid #e2e8f0", fontSize: 12 }}
               />
               <Legend wrapperStyle={{ fontSize: 12 }} />
@@ -90,7 +91,8 @@ export function MonthlyChart({ transactions }: { transactions: Transaction[] }) 
                   ))}
                 </Pie>
                 <Tooltip
-                  formatter={(value: number) => value.toLocaleString("th-TH")}
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  formatter={(value: any) => [value.toLocaleString("th-TH"), ""]}
                   contentStyle={{ borderRadius: 8, border: "1px solid #e2e8f0", fontSize: 12 }}
                 />
               </PieChart>

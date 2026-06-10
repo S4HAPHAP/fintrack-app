@@ -24,7 +24,7 @@ export async function mapSupabaseUser(user: SupabaseUser): Promise<User> {
       metadataName ??
       user.email?.split("@")[0] ??
       "User",
-    role: profile?.role ?? "user",
+    role: profile?.role ?? "wait",
     companyId: profile?.company_id ?? null,
   };
 }

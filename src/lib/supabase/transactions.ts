@@ -4,9 +4,10 @@ import { supabase } from "./client";
 type TransactionRow = {
   id: string; date: string; type: TransactionType;
   category: string; amount: number; note: string | null;
-  project_id: string; created_at: string;
+  project_id: string; user_id: string; created_at: string;
   projects: { name: string } | { name: string }[] | null;
   companies: { name: string } | { name: string }[] | null;
+  profiles?: { full_name: string | null } | { full_name: string | null }[] | null;
 };
 
 function getProjectName(projects: TransactionRow["projects"]): string {
@@ -21,21 +22,43 @@ function getCompanyName(companies: TransactionRow["companies"]): string | null {
   return companies.name;
 }
 
+function getCreatorName(profiles: TransactionRow["profiles"]): string | null {
+  if (!profiles) return null;
+  if (Array.isArray(profiles)) return profiles[0]?.full_name ?? null;
+  return profiles.full_name;
+}
+
 export function mapTransactionRow(row: TransactionRow): Transaction {
   return {
     id: row.id, date: row.date, type: row.type, category: row.category,
     amount: Number(row.amount), note: row.note ?? "",
     projectName: getProjectName(row.projects),
     companyName: getCompanyName(row.companies),
+    createdBy: getCreatorName(row.profiles),
+    createdAt: row.created_at,
   };
 }
 
+const SELECT_BASE = "id, date, type, category, amount, note, project_id, user_id, created_at, projects(name), companies(name)";
+const SELECT_WITH_PROFILE = SELECT_BASE + ", profiles!user_id(full_name)";
+
+
 export async function fetchTransactions(): Promise<Transaction[]> {
-  const { data, error } = await supabase
+  // Try with profiles join first; fall back without if FK missing
+  let { data, error } = await supabase
     .from("transactions")
-    .select("id, date, type, category, amount, note, project_id, created_at, projects(name), companies(name)")
+    .select(SELECT_WITH_PROFILE)
     .order("date", { ascending: false });
-  if (error) throw error;
+
+  if (error) {
+    // FK not set up yet — query without profiles join
+    ({ data, error } = await supabase
+      .from("transactions")
+      .select(SELECT_BASE)
+      .order("date", { ascending: false }));
+    if (error) throw error;
+  }
+
   return (data ?? []).map((row) => mapTransactionRow(row as TransactionRow));
 }
 
@@ -67,7 +90,6 @@ export async function createTransaction(
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("Not authenticated");
 
-  // Use passed companyId, or fetch primary company
   const effectiveCompanyId = companyId !== undefined
     ? companyId
     : await getPrimaryCompanyId();
@@ -81,13 +103,21 @@ export async function createTransaction(
   };
   if (effectiveCompanyId) payload.company_id = effectiveCompanyId;
 
-  const { data: created, error } = await supabase
+  const { data: created, error: insertError } = await supabase
     .from("transactions")
     .insert(payload)
-    .select("id, date, type, category, amount, note, project_id, created_at, projects(name), companies(name)")
+    .select(SELECT_BASE)
     .single();
-  if (error) throw error;
-  return mapTransactionRow(created as TransactionRow);
+  if (insertError) throw insertError;
+
+  // Look up creator name from profiles
+  const { data: profile } = await supabase
+    .from("profiles").select("full_name").eq("id", user.id).maybeSingle();
+
+  return mapTransactionRow({
+    ...(created as TransactionRow),
+    profiles: profile ? { full_name: profile.full_name } : null,
+  });
 }
 
 export async function removeTransaction(id: string): Promise<void> {

@@ -26,6 +26,7 @@ interface AuthContextValue {
   signup: (email: string, password: string) => Promise<AuthResult>;
   signInWithGoogle: () => Promise<AuthResult>;
   logout: () => Promise<void>;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -139,9 +140,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
   }, []);
 
+  const refreshUser = useCallback(async () => {
+    const { data } = await supabase.auth.getUser();
+    if (data.user) {
+      setUser(await mapSupabaseUser(data.user));
+    }
+  }, []);
+
   const value = useMemo(
-    () => ({ user, isLoading, login, signup, signInWithGoogle, logout }),
-    [user, isLoading, login, signup, signInWithGoogle, logout]
+    () => ({ user, isLoading, login, signup, signInWithGoogle, logout, refreshUser }),
+    [user, isLoading, login, signup, signInWithGoogle, logout, refreshUser]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

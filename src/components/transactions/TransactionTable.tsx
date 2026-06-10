@@ -1,6 +1,6 @@
 "use client";
 import { Card } from "@/components/ui/Card";
-import { formatCurrency, formatDate } from "@/lib/format";
+import { formatCurrency, formatDate, formatDateTime } from "@/lib/format";
 import { useLanguage } from "@/context/LanguageContext";
 import type { Transaction } from "@/types";
 
@@ -26,6 +26,8 @@ export function TransactionTable({ transactions }: { transactions: Transaction[]
                 <th className="px-6 py-3 font-medium">{t.projectCol}</th>
                 <th className="px-6 py-3 font-medium">{t.noteCol}</th>
                 <th className="px-6 py-3 font-medium text-right">{t.amountCol}</th>
+                <th className="px-6 py-3 font-medium">{t.createdByCol}</th>
+                <th className="px-6 py-3 font-medium">{t.createdAtCol}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -44,6 +46,8 @@ export function TransactionTable({ transactions }: { transactions: Transaction[]
                   <td className={`whitespace-nowrap px-6 py-4 text-right font-semibold ${tx.type === "income" ? "text-emerald-600" : "text-rose-600"}`}>
                     {tx.type === "income" ? "+" : "-"}{formatCurrency(tx.amount)}
                   </td>
+                  <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-600">{tx.createdBy ?? "—"}</td>
+                  <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-500">{tx.createdAt ? formatDateTime(tx.createdAt) : "—"}</td>
                 </tr>
               ))}
             </tbody>

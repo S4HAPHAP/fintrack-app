@@ -1,7 +1,7 @@
 "use client";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { SummaryCards } from "@/components/dashboard/SummaryCards";
-import { RecentTransactions } from "@/components/dashboard/RecentTransactions";
+import { TransactionTable } from "@/components/transactions/TransactionTable";
 import { ProjectFilter } from "@/components/transactions/ProjectFilter";
 import { useFinance } from "@/context/FinanceContext";
 import { useLanguage } from "@/context/LanguageContext";
@@ -18,12 +18,12 @@ function DashboardContent() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-bold tracking-tight text-slate-900">{t.dashboard}</h1>
         <ProjectFilter projects={projects} value={projectFilter} onChange={setProjectFilter} />
       </div>
       <SummaryCards summary={summary} />
-      <RecentTransactions transactions={filteredTransactions} />
+      <TransactionTable transactions={filteredTransactions} />
     </div>
   );
 }

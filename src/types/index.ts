@@ -1,5 +1,5 @@
 export type TransactionType = "income" | "expense";
-export type UserRole = "admin" | "user";
+export type UserRole = "admin" | "user" | "wait";
 
 
 export interface Transaction {
@@ -11,6 +11,8 @@ export interface Transaction {
   note: string;
   projectName: string;
   companyName?: string | null;
+  createdBy?: string | null;
+  createdAt?: string | null;
 }
 
 export interface User {

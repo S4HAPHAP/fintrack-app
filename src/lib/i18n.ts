@@ -17,7 +17,7 @@ export interface Translations {
   companyRequired: string; noCompanyAssigned: string;
   transactionList: string; transactionCount: (n: number) => string;
   dateCol: string; typeCol: string; categoryCol: string;
-  projectCol: string; noteCol: string; amountCol: string; companyCol: string; deleteBtn: string;
+  projectCol: string; noteCol: string; amountCol: string; companyCol: string; createdByCol: string; createdAtCol: string; deleteBtn: string;
   noData: string; noDataFilter: string;
   adminPanel: string; users: string; companies: string; categories: string;
   totalUsers: string; userName: string; userEmail: string; userRole: string;
@@ -46,7 +46,7 @@ const en: Translations = {
   companyRequired: "Please select a company.", noCompanyAssigned: "No company assigned. Contact admin.",
   transactionList: "Transaction List", transactionCount: (n) => `${n} transaction${n !== 1 ? "s" : ""}`,
   dateCol: "Date", typeCol: "Type", categoryCol: "Category",
-  projectCol: "Project", noteCol: "Note", amountCol: "Amount", companyCol: "Company", deleteBtn: "Delete",
+  projectCol: "Project", noteCol: "Note", amountCol: "Amount", companyCol: "Company", createdByCol: "Created by", createdAtCol: "Created at", deleteBtn: "Delete",
   noData: "No transactions found", noDataFilter: "No transactions match the current filter.",
   adminPanel: "Admin Panel", users: "Users", companies: "Companies", categories: "Categories",
   totalUsers: "Total Users", userName: "Name", userEmail: "Email", userRole: "Role",
@@ -75,7 +75,7 @@ const th: Translations = {
   companyRequired: "กรุณาเลือกบริษัท", noCompanyAssigned: "ยังไม่ได้รับมอบหมายบริษัท กรุณาติดต่อ Admin",
   transactionList: "รายการทั้งหมด", transactionCount: (n) => `${n} รายการ`,
   dateCol: "วันที่", typeCol: "ประเภท", categoryCol: "หมวดหมู่",
-  projectCol: "โปรเจกต์", noteCol: "หมายเหตุ", amountCol: "จำนวน", companyCol: "บริษัท", deleteBtn: "ลบ",
+  projectCol: "โปรเจกต์", noteCol: "หมายเหตุ", amountCol: "จำนวน", companyCol: "บริษัท", createdByCol: "ผู้สร้าง", createdAtCol: "วันที่สร้าง", deleteBtn: "ลบ",
   noData: "ไม่พบรายการ", noDataFilter: "ไม่พบรายการที่ตรงกับตัวกรอง",
   adminPanel: "จัดการระบบ", users: "ผู้ใช้งาน", companies: "บริษัท", categories: "หมวดหมู่",
   totalUsers: "จำนวนผู้ใช้", userName: "ชื่อ", userEmail: "อีเมล", userRole: "สิทธิ์",
